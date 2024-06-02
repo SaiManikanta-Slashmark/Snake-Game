@@ -15,11 +15,11 @@ import javax.swing.Timer;
 
 public class GameBoard extends JPanel implements ActionListener {
 
-    private final int B_WIDTH = 300;
-    private final int B_HEIGHT = 300;
+    private final int B_WIDTH = 600;
+    private final int B_HEIGHT = 600;
     private final int DOT_SIZE = 10;
-    private final int ALL_DOTS = 900;
-    private final int RAND_POS = 29;
+    private final int ALL_DOTS = 3600;
+    private final int RAND_POS = 59;
     private final int DELAY = 140;
 
     private final int x[] = new int[ALL_DOTS];
@@ -28,6 +28,7 @@ public class GameBoard extends JPanel implements ActionListener {
     private int dots;
     private int apple_x;
     private int apple_y;
+    private int score;
 
     private boolean leftDirection = false;
     private boolean rightDirection = true;
@@ -41,42 +42,33 @@ public class GameBoard extends JPanel implements ActionListener {
     private Image head;
 
     public GameBoard() {
-        
         initBoard();
     }
-    
-    private void initBoard() {
 
+    private void initBoard() {
         addKeyListener(new TAdapter());
         setBackground(Color.black);
         setFocusable(true);
-
         setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
         loadImages();
         initGame();
     }
 
     private void loadImages() {
-
-        ImageIcon iid = new ImageIcon("dot.png");
-        ball = iid.getImage();
-
-        ImageIcon iia = new ImageIcon("apple.png");
-        apple = iia.getImage();
-
-        ImageIcon iih = new ImageIcon("head.png");
-        head = iih.getImage();
+        ball = new ImageIcon(getClass().getResource("/images/dot.png")).getImage();
+        apple = new ImageIcon(getClass().getResource("/images/apple.png")).getImage();
+        head = new ImageIcon(getClass().getResource("/images/head.png")).getImage();
     }
 
     private void initGame() {
-
         dots = 3;
+        score = 0;
 
         for (int z = 0; z < dots; z++) {
             x[z] = 50 - z * 10;
             y[z] = 50;
         }
-        
+
         locateApple();
 
         timer = new Timer(DELAY, this);
@@ -89,11 +81,9 @@ public class GameBoard extends JPanel implements ActionListener {
 
         doDrawing(g);
     }
-    
+
     private void doDrawing(Graphics g) {
-
         if (inGame) {
-
             g.drawImage(apple, apple_x, apple_y, this);
 
             for (int z = 0; z < dots; z++) {
@@ -104,16 +94,24 @@ public class GameBoard extends JPanel implements ActionListener {
                 }
             }
 
+            drawScore(g);
+
             Toolkit.getDefaultToolkit().sync();
 
         } else {
-
             gameOver(g);
-        }        
+        }
+    }
+
+    private void drawScore(Graphics g) {
+        String scoreText = "Score: " + score;
+        Font small = new Font("Helvetica", Font.BOLD, 14);
+        g.setColor(Color.white);
+        g.setFont(small);
+        g.drawString(scoreText, 10, B_HEIGHT - 10);
     }
 
     private void gameOver(Graphics g) {
-        
         String msg = "Game Over";
         Font small = new Font("Helvetica", Font.BOLD, 14);
         FontMetrics metr = getFontMetrics(small);
@@ -121,19 +119,20 @@ public class GameBoard extends JPanel implements ActionListener {
         g.setColor(Color.white);
         g.setFont(small);
         g.drawString(msg, (B_WIDTH - metr.stringWidth(msg)) / 2, B_HEIGHT / 2);
+
+        String scoreMsg = "Final Score: " + score;
+        g.drawString(scoreMsg, (B_WIDTH - metr.stringWidth(scoreMsg)) / 2, B_HEIGHT / 2 + 20);
     }
 
     private void checkApple() {
-
         if ((x[0] == apple_x) && (y[0] == apple_y)) {
-
             dots++;
+            score++;
             locateApple();
         }
     }
 
     private void move() {
-
         for (int z = dots; z > 0; z--) {
             x[z] = x[(z - 1)];
             y[z] = y[(z - 1)];
@@ -157,9 +156,7 @@ public class GameBoard extends JPanel implements ActionListener {
     }
 
     private void checkCollision() {
-
         for (int z = dots; z > 0; z--) {
-
             if ((z > 3) && (x[0] == x[z]) && (y[0] == y[z])) {
                 inGame = false;
             }
@@ -180,14 +177,13 @@ public class GameBoard extends JPanel implements ActionListener {
         if (x[0] < 0) {
             inGame = false;
         }
-        
+
         if (!inGame) {
             timer.stop();
         }
     }
 
     private void locateApple() {
-
         int r = (int) (Math.random() * RAND_POS);
         apple_x = ((r * DOT_SIZE));
 
@@ -197,9 +193,7 @@ public class GameBoard extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         if (inGame) {
-
             checkApple();
             checkCollision();
             move();
@@ -209,10 +203,8 @@ public class GameBoard extends JPanel implements ActionListener {
     }
 
     private class TAdapter extends KeyAdapter {
-
         @Override
         public void keyPressed(KeyEvent e) {
-
             int key = e.getKeyCode();
 
             if ((key == KeyEvent.VK_LEFT) && (!rightDirection)) {
