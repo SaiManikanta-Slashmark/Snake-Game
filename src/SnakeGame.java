@@ -37,9 +37,9 @@ public class SnakeGame extends JFrame {
         JButton startButton = new JButton("Start Game");
         startButton.setFont(new Font("Algerian", Font.BOLD, 18));
         welcomePanel.add(startButton, BorderLayout.SOUTH);
-        welcomePanel.setBackground(Color.BLUE); 
+        welcomePanel.setBackground(Color.GREEN); 
         titleLabel.setForeground(Color.WHITE); 
-        startButton.setBackground(Color.GREEN);
+        startButton.setBackground(Color.RED);
         startButton.setForeground(Color.WHITE);
 
         startButton.addActionListener(new ActionListener() {
@@ -60,7 +60,7 @@ public class SnakeGame extends JFrame {
         add(gameBoard);
         revalidate();
         repaint();
-        gameBoard.requestFocusInWindow(); // Ensure focus is set
+        gameBoard.requestFocusInWindow(); 
     }
 
     public void showWelcomePanel() {
